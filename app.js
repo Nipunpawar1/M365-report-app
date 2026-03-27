@@ -4,13 +4,13 @@ document.getElementById("loginBtn").onclick = async () => {
             scopes: ["User.Read"]
         };
 
-        // 1) Login via MSAL
+        // 1) Sign in with MSAL
         const loginResponse = await msalInstance.loginPopup(loginRequest);
         const account = loginResponse.account;
 
         document.getElementById("output").innerHTML = `
             <p><strong>Signed in as:</strong> ${account.username}</p>
-            <p>Fetching profile...</p>
+            <p>Retrieving your profile from Microsoft Graph...</p>
         `;
 
         // 2) Acquire token silently
@@ -23,23 +23,20 @@ document.getElementById("loginBtn").onclick = async () => {
 
         // 3) Call Microsoft Graph /me endpoint
         const graphResponse = await fetch("https://graph.microsoft.com/v1.0/me", {
-            headers: {
-                "Authorization": `Bearer ${accessToken}`
-            }
+            headers: { "Authorization": `Bearer ${accessToken}` }
         });
 
         const profile = await graphResponse.json();
 
-        // 4) Display results
+        // 4) Display result
         document.getElementById("output").innerHTML = `
-            <p><strong>Signed in as:</strong> ${account.username}</p>
-            <h3>Profile Information</h3>
+            <h3>Microsoft Graph Profile</h3>
             <pre>${JSON.stringify(profile, null, 2)}</pre>
         `;
-
-    } catch (error) {
-        console.error("Login or Graph call failed:", error);
-        alert("Login or API call failed — check console for details.");
+    }
+    catch (error) {
+        console.error("Error during login or Graph call:", error);
+        alert("Login or Graph request failed. Check console for details.");
     }
 };
 ``
